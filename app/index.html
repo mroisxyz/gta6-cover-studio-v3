@@ -1,122 +1,101 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Neon Mile — Cover Studio</title>
-  <link rel="stylesheet" href="./style.css" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cover Studio — Original GTA-Poster-Style Cover Art Maker</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <div id="app" class="studio">
+<body class="mode-editor">
+  <div class="app-shell" id="studio">
     <header class="topbar">
       <div class="brand">
-        <div class="brand-mark">VC</div>
-        <div class="brand-copy"><strong>NEON MILE</strong><span>COVER STUDIO</span></div>
-      </div>
-
-      <div class="preset-rail">
-        <div class="preset-group">
-          <span class="preset-label">TITLE STYLE</span>
-          <div class="preset-buttons">
-            <button type="button" class="preset-btn is-active" data-treatment="neonMile">NEON MILE</button>
-            <button type="button" class="preset-btn" data-treatment="palmHeat">PALM HEAT</button>
-            <button type="button" class="preset-btn" data-treatment="goldenVice">GOLDEN VICE</button>
-          </div>
-        </div>
-        <div class="preset-group">
-          <span class="preset-label">GRADE</span>
-          <div class="preset-buttons">
-            <button type="button" class="preset-btn is-active" data-palette="sunsetDrive">SUNSET</button>
-            <button type="button" class="preset-btn" data-palette="neonNights">NEON</button>
-            <button type="button" class="preset-btn" data-palette="goldenHour">GOLDEN</button>
-          </div>
-        </div>
-        <div class="preset-group">
-          <span class="preset-label">LAYOUT</span>
-          <div class="preset-buttons">
-            <button type="button" class="preset-btn is-active" data-layout="showcase">SHOWCASE</button>
-            <button type="button" class="preset-btn" data-layout="mosaic">MOSAIC</button>
-            <button type="button" class="preset-btn" data-layout="marquee">MARQUEE</button>
-          </div>
-        </div>
-        <div class="preset-group">
-          <span class="preset-label">SIZE</span>
-          <div class="preset-buttons">
-            <button type="button" class="preset-btn is-active" data-size="square">1:1</button>
-            <button type="button" class="preset-btn" data-size="portrait">4:5</button>
-            <button type="button" class="preset-btn" data-size="wide">16:9</button>
-          </div>
+        <span class="brand-mark" aria-hidden="true">MF</span>
+        <div>
+          <h1>COVER STUDIO <span class="brand-edition">/ ORIGINAL ART</span></h1>
+          <p class="tagline">A sun-bleached, multi-panel poster maker. Every pixel drawn locally.</p>
         </div>
       </div>
-
-      <button id="exportBtn" type="button" class="export-btn">EXPORT PNG</button>
+      <nav class="top-actions" aria-label="Views">
+        <a class="ghost-link" href="?demo=cover&amp;size=wide">Final cover ↗</a>
+        <button type="button" id="exportBtn" class="gold-button">Export PNG</button>
+      </nav>
     </header>
 
-    <main class="workspace">
-      <aside class="sidebar">
-        <div id="bootError" class="boot-error"></div>
+    <main class="studio-grid">
+      <aside class="controls-panel" aria-label="Cover controls">
+        <section class="control-group">
+          <h2>01 / Photos</h2>
+          <label class="file-drop" for="photoInput">
+            <span class="file-drop-title">Drop in a local photo</span>
+            <span class="file-drop-note">JPEG, PNG or WebP · read in-browser, never uploaded</span>
+          </label>
+          <input id="photoInput" type="file" accept="image/*" multiple>
+          <div id="photoGallery" class="photo-gallery" aria-label="Loaded photos"></div>
+        </section>
 
-        <section class="card">
-          <h2>01 <span>/ PHOTOS</span></h2>
-          <div id="photoStrip" class="photo-strip"></div>
-          <div class="upload-row">
-            <button id="addPhotoBtn" type="button" class="ghost-btn">+ ADD PHOTO</button>
-            <input id="addPhotoInput" type="file" accept="image/*" multiple hidden />
+        <section class="control-group">
+          <h2>02 / Words</h2>
+          <label for="titlePresetSelect">Title preset</label>
+          <select id="titlePresetSelect"></select>
+          <label for="titleInput">Headline</label>
+          <input id="titleInput" type="text" maxlength="28" spellcheck="false" value="NEON MILE">
+          <label for="captionInput">Caption / kicker</label>
+          <input id="captionInput" type="text" maxlength="48" spellcheck="false" value="THE CITY NEVER SLEEPS TWICE">
+        </section>
+
+        <section class="control-group">
+          <h2>03 / Grade &amp; layout</h2>
+          <label for="paletteSelect">Sunset grade</label>
+          <select id="paletteSelect"></select>
+          <label for="layoutSelect">Panel mosaic</label>
+          <select id="layoutSelect"></select>
+          <label for="sizeSelect">Export size</label>
+          <select id="sizeSelect"></select>
+        </section>
+
+        <section class="control-group">
+          <h2>04 / Panel crop</h2>
+          <label for="panelSelect">Selected panel</label>
+          <select id="panelSelect"></select>
+          <div class="slider-row">
+            <label for="focalX">Focal X</label>
+            <input id="focalX" type="range" min="0" max="100" value="50">
           </div>
-          <p class="hint">Pick any photo from your machine — a chip assigns it to the selected panel. Nothing is uploaded.</p>
-        </section>
-
-        <section class="card">
-          <h2>02 <span>/ PANELS</span><span id="activePanelLabel" class="pill">PANEL 1</span></h2>
-          <div id="panelGrid" class="panel-grid"></div>
-        </section>
-
-        <section class="card">
-          <h2>03 <span>/ FRAMING</span></h2>
-          <label class="slider-row">
-            <span class="slider-title">ZOOM <b id="zoomValue">100%</b></span>
-            <input id="zoomRange" type="range" min="1" max="3.2" step="0.01" value="1" />
-          </label>
-          <label class="slider-row">
-            <span class="slider-title">POSITION X <b id="xValue">0</b></span>
-            <input id="posXRange" type="range" min="-1" max="1" step="0.01" value="0" />
-          </label>
-          <label class="slider-row">
-            <span class="slider-title">POSITION Y <b id="yValue">0</b></span>
-            <input id="posYRange" type="range" min="-1" max="1" step="0.01" value="0" />
-          </label>
-          <button id="resetCropBtn" type="button" class="ghost-btn">RESET PANEL</button>
-        </section>
-
-        <section class="card words">
-          <h2>04 <span>/ WORDS</span></h2>
-          <label class="field">TITLE<input id="titleInput" type="text" maxlength="22" /></label>
-          <label class="field">CAPTION<input id="captionInput" type="text" maxlength="42" /></label>
-          <div class="cast-grid">
-            <label class="field">STAR 1<input id="castName1" type="text" maxlength="18" /></label>
-            <label class="field">ROLE 1<input id="castRole1" type="text" maxlength="18" /></label>
-            <label class="field">STAR 2<input id="castName2" type="text" maxlength="18" /></label>
-            <label class="field">ROLE 2<input id="castRole2" type="text" maxlength="18" /></label>
-            <label class="field">STAR 3<input id="castName3" type="text" maxlength="18" /></label>
-            <label class="field">ROLE 3<input id="castRole3" type="text" maxlength="18" /></label>
+          <div class="slider-row">
+            <label for="focalY">Focal Y</label>
+            <input id="focalY" type="range" min="0" max="100" value="42">
           </div>
-          <label class="field">BILLING BLOCK<textarea id="billingInput" rows="2"></textarea></label>
+          <div class="slider-row">
+            <label for="zoomRange">Zoom <span id="zoomValue" class="zoom-readout">1.00×</span></label>
+            <input id="zoomRange" type="range" min="100" max="300" value="100">
+          </div>
+          <p class="hint">Tip: drag directly on the preview to pan a panel.</p>
+          <button type="button" id="resetPanelBtn" class="ghost-button">Reset this panel</button>
         </section>
       </aside>
 
-      <section class="stage">
-        <div class="stage-head"><span>LIVE PREVIEW</span><span id="previewMeta"></span></div>
-        <div class="preview-frame"><canvas id="previewCanvas"></canvas></div>
-        <div class="stage-foot">Drag a panel to reframe it · click a thumbnail to switch panels · one click writes a real PNG</div>
+      <section class="preview-pane" aria-label="Live cover preview">
+        <div class="preview-head">
+          <div>
+            <span class="live-dot" aria-hidden="true"></span>
+            <strong>LIVE PREVIEW</strong>
+          </div>
+          <span class="preview-sub">Canvas · local render · no server round-trip</span>
+        </div>
+        <div class="canvas-wrap">
+          <canvas id="editorCanvas" width="1920" height="1080" aria-label="Cover preview"></canvas>
+        </div>
+        <p id="editorStatus" class="status-line" role="status">Starting the studio…</p>
       </section>
     </main>
   </div>
 
-  <div id="coverStage" class="cover-stage">
-    <canvas id="coverCanvas"></canvas>
-    <div id="coverLabel" class="cover-label"></div>
-  </div>
+  <section class="demo-stage" id="demoStage" aria-label="Finished cover stage">
+    <canvas id="stageCanvas" width="1920" height="1080" aria-label="Finished cover"></canvas>
+    <p id="demoNote" class="demo-note">FINAL EXPORT</p>
+  </section>
 
-  <script type="module" src="./src/main.js"></script>
+  <script type="module" src="src/app.js"></script>
 </body>
 </html>

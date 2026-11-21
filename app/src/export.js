@@ -1,45 +1,65 @@
-// Export helpers. The exporter renders the poster at the full target pixel
-// size into an offscreen canvas and writes a PNG entirely on the user's
-// machine; no image data ever leaves the browser.
+// Full-resolution PNG export. Rendering is done on a detached canvas, so the
+// on-screen editor preview is never resized or disturbed.
 
-import { POSTER_SIZES } from './presets.js';
-import { renderPosterCanvas } from './poster-render.js';
+import { EXPORT_SIZES, DEFAULT_SIZE } from './config.js';
+import { renderPosterCanvas } from './render.js';
 
-export function resolveSize(sizeKey) {
-  return POSTER_SIZES[sizeKey] || POSTER_SIZES.square;
+function resolveSize(size) {
+  if (typeof size === 'string') return EXPORT_SIZES[size] ?? EXPORT_SIZES[DEFAULT_SIZE];
+  if (size && Number.isFinite(size.w) && Number.isFinite(size.h)) {
+    return { id: size.id ?? 'custom', w: Math.round(size.w), h: Math.round(size.h) };
+  }
+  return EXPORT_SIZES[DEFAULT_SIZE];
 }
 
-export function composeExportCanvas(config, sizeKey) {
-  const size = resolveSize(sizeKey);
-  const canvas = document.createElement('canvas');
-  return renderPosterCanvas(canvas, { ...config, width: size.width, height: size.height });
+function slug(text) {
+  return String(text ?? 'cover')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 48) || 'cover';
 }
 
-export function coverToBlob(config, sizeKey) {
-  const canvas = composeExportCanvas(config, sizeKey);
+function toBlob(canvas) {
   return new Promise((resolve, reject) => {
-    canvas.toBlob((blob) => {
-      if (blob) resolve(blob);
-      else reject(new Error('PNG encoding failed'));
-    }, 'image/png');
+    if (typeof canvas.toBlob === 'function') {
+      canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('PNG encode failed'))), 'image/png');
+      return;
+    }
+    try {
+      const dataUrl = canvas.toDataURL('image/png');
+      const binary = atob(dataUrl.split(',')[1]);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+      resolve(new Blob([bytes], { type: 'image/png' }));
+    } catch (error) {
+      reject(error);
+    }
   });
 }
 
-function safeFileName(title, size) {
-  const base = String(title || 'cover').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-  return `${base || 'cover'}-${size.width}x${size.height}.png`;
-}
+/** Render at the chosen preset size and download the PNG locally. */
+export async function exportCoverPng(state, size = state?.sizeId ?? DEFAULT_SIZE) {
+  const target = resolveSize(size);
+  const canvas = document.createElement('canvas');
+  canvas.width = target.w;
+  canvas.height = target.h;
 
-export async function exportCoverPng(config, sizeKey) {
-  const size = resolveSize(sizeKey);
-  const blob = await coverToBlob(config, sizeKey);
+  renderPosterCanvas(canvas, {
+    ...state,
+    width: target.w,
+    height: target.h,
+    sizeId: target.id,
+  });
+
+  const blob = await toBlob(canvas);
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = safeFileName(config.title, size);
+  link.download = `${slug(state?.title)}-${target.w}x${target.h}.png`;
   document.body.appendChild(link);
   link.click();
   link.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 4000);
-  return { blob, filename: link.download };
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+  return blob;
 }
