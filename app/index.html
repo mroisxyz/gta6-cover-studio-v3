@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Neon Mile — Cover Studio</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div id="app" class="studio">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">VC</div>
+        <div class="brand-copy"><strong>NEON MILE</strong><span>COVER STUDIO</span></div>
+      </div>
+
+      <div class="preset-rail">
+        <div class="preset-group">
+          <span class="preset-label">TITLE STYLE</span>
+          <div class="preset-buttons">
+            <button type="button" class="preset-btn is-active" data-treatment="neonMile">NEON MILE</button>
+            <button type="button" class="preset-btn" data-treatment="palmHeat">PALM HEAT</button>
+            <button type="button" class="preset-btn" data-treatment="goldenVice">GOLDEN VICE</button>
+          </div>
+        </div>
+        <div class="preset-group">
+          <span class="preset-label">GRADE</span>
+          <div class="preset-buttons">
+            <button type="button" class="preset-btn is-active" data-palette="sunsetDrive">SUNSET</button>
+            <button type="button" class="preset-btn" data-palette="neonNights">NEON</button>
+            <button type="button" class="preset-btn" data-palette="goldenHour">GOLDEN</button>
+          </div>
+        </div>
+        <div class="preset-group">
+          <span class="preset-label">LAYOUT</span>
+          <div class="preset-buttons">
+            <button type="button" class="preset-btn is-active" data-layout="showcase">SHOWCASE</button>
+            <button type="button" class="preset-btn" data-layout="mosaic">MOSAIC</button>
+            <button type="button" class="preset-btn" data-layout="marquee">MARQUEE</button>
+          </div>
+        </div>
+        <div class="preset-group">
+          <span class="preset-label">SIZE</span>
+          <div class="preset-buttons">
+            <button type="button" class="preset-btn is-active" data-size="square">1:1</button>
+            <button type="button" class="preset-btn" data-size="portrait">4:5</button>
+            <button type="button" class="preset-btn" data-size="wide">16:9</button>
+          </div>
+        </div>
+      </div>
+
+      <button id="exportBtn" type="button" class="export-btn">EXPORT PNG</button>
+    </header>
+
+    <main class="workspace">
+      <aside class="sidebar">
+        <div id="bootError" class="boot-error"></div>
+
+        <section class="card">
+          <h2>01 <span>/ PHOTOS</span></h2>
+          <div id="photoStrip" class="photo-strip"></div>
+          <div class="upload-row">
+            <button id="addPhotoBtn" type="button" class="ghost-btn">+ ADD PHOTO</button>
+            <input id="addPhotoInput" type="file" accept="image/*" multiple hidden />
+          </div>
+          <p class="hint">Pick any photo from your machine — a chip assigns it to the selected panel. Nothing is uploaded.</p>
+        </section>
+
+        <section class="card">
+          <h2>02 <span>/ PANELS</span><span id="activePanelLabel" class="pill">PANEL 1</span></h2>
+          <div id="panelGrid" class="panel-grid"></div>
+        </section>
+
+        <section class="card">
+          <h2>03 <span>/ FRAMING</span></h2>
+          <label class="slider-row">
+            <span class="slider-title">ZOOM <b id="zoomValue">100%</b></span>
+            <input id="zoomRange" type="range" min="1" max="3.2" step="0.01" value="1" />
+          </label>
+          <label class="slider-row">
+            <span class="slider-title">POSITION X <b id="xValue">0</b></span>
+            <input id="posXRange" type="range" min="-1" max="1" step="0.01" value="0" />
+          </label>
+          <label class="slider-row">
+            <span class="slider-title">POSITION Y <b id="yValue">0</b></span>
+            <input id="posYRange" type="range" min="-1" max="1" step="0.01" value="0" />
+          </label>
+          <button id="resetCropBtn" type="button" class="ghost-btn">RESET PANEL</button>
+        </section>
+
+        <section class="card words">
+          <h2>04 <span>/ WORDS</span></h2>
+          <label class="field">TITLE<input id="titleInput" type="text" maxlength="22" /></label>
+          <label class="field">CAPTION<input id="captionInput" type="text" maxlength="42" /></label>
+          <div class="cast-grid">
+            <label class="field">STAR 1<input id="castName1" type="text" maxlength="18" /></label>
+            <label class="field">ROLE 1<input id="castRole1" type="text" maxlength="18" /></label>
+            <label class="field">STAR 2<input id="castName2" type="text" maxlength="18" /></label>
+            <label class="field">ROLE 2<input id="castRole2" type="text" maxlength="18" /></label>
+            <label class="field">STAR 3<input id="castName3" type="text" maxlength="18" /></label>
+            <label class="field">ROLE 3<input id="castRole3" type="text" maxlength="18" /></label>
+          </div>
+          <label class="field">BILLING BLOCK<textarea id="billingInput" rows="2"></textarea></label>
+        </section>
+      </aside>
+
+      <section class="stage">
+        <div class="stage-head"><span>LIVE PREVIEW</span><span id="previewMeta"></span></div>
+        <div class="preview-frame"><canvas id="previewCanvas"></canvas></div>
+        <div class="stage-foot">Drag a panel to reframe it · click a thumbnail to switch panels · one click writes a real PNG</div>
+      </section>
+    </main>
+  </div>
+
+  <div id="coverStage" class="cover-stage">
+    <canvas id="coverCanvas"></canvas>
+    <div id="coverLabel" class="cover-label"></div>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
